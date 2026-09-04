@@ -297,31 +297,6 @@ export function useCrossword(grid: CrosswordCell[][], clues: CrosswordClue[]) {
         toggleDirection();
 
         break;
-
-      case 'Home':
-        event.preventDefault();
-
-        moveToFirstCell();
-
-        break;
-
-      case 'End':
-        event.preventDefault();
-
-        moveToLastCell();
-
-        break;
-
-      case 'Tab':
-        event.preventDefault();
-
-        if (event.shiftKey) {
-          selectPreviousCell();
-        } else {
-          selectNextCell();
-        }
-
-        break;
     }
   }
 

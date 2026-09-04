@@ -2,6 +2,7 @@
 import CrosswordGrid from '@/components/CrosswordGrid.vue';
 import { useCrossword } from '@/composables/useCrossword';
 import type { CrosswordClue, CrosswordCell } from '@/types/crossword';
+import CrosswordClues from '@/components/CrosswordClues.vue';
 
 const grid: CrosswordCell[][] = [
   [
@@ -30,6 +31,30 @@ const grid: CrosswordCell[][] = [
   ],
 ];
 
+const clues: CrosswordClue[] = [
+  {
+    number: 1,
+    clue: 'A domesticated feline',
+    answer: 'CAT',
+    start: { row: 0, col: 0 },
+    direction: 'across',
+  },
+  {
+    number: 2,
+    clue: 'A place to live',
+    answer: 'HOME',
+    start: { row: 1, col: 0 },
+    direction: 'across',
+  },
+  {
+    number: 3,
+    clue: 'Opposite of yes',
+    answer: 'NO',
+    start: { row: 3, col: 0 },
+    direction: 'across',
+  },
+];
+
 const {
   selectedCell,
   direction,
@@ -39,7 +64,13 @@ const {
   activeCells,
   selectCell,
   handleKeydown,
-} = useCrossword(grid, []);
+} = useCrossword(grid, clues);
+
+function selectClue(clue: CrosswordClue) {
+  direction.value = clue.direction;
+  selectedCell.value = { ...clue.start };
+}
+
 </script>
 
 <template>
@@ -56,6 +87,14 @@ const {
         @keydown="handleKeydown"
       />
     </div>
+    <aside class="crossword__clues">
+      <CrosswordClues
+        :clues="clues"
+        :direction="direction"
+        :active-clue="activeClue"
+        @select="selectClue"
+      />
+    </aside>
   </main>
 </template>
 
