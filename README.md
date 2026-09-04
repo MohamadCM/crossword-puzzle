@@ -14,4 +14,5 @@ npm run build   # Build everything
 
 ## Implementation Notes
 
-- 
+- The project is scaffolded using Vite with TypeScript plugin
+- PrimeVue library is used for UI components
