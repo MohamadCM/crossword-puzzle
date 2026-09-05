@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type {CrosswordClue, Direction} from '@/types/crossword';
+import type { CrosswordClue, Direction } from '@/types/crossword';
 
 defineProps<{
   clues: CrosswordClue[];
@@ -15,24 +15,24 @@ const emit = defineEmits<{
 <template>
   <section class="clues">
     <div
-        v-for="clueDirection in ['across', 'down'] as Direction[]"
-        :key="clueDirection"
-        class="clues__section"
+      v-for="clueDirection in ['across', 'down'] as Direction[]"
+      :key="clueDirection"
+      class="clues__section"
     >
       <h2 class="clues__heading">
         {{ clueDirection === 'across' ? 'Across' : 'Down' }}
       </h2>
 
       <button
-          v-for="clue in clues.filter((item) => item.direction === clueDirection)"
-          :key="`${clue.direction}-${clue.number}`"
-          class="clue"
-          :class="{
+        v-for="clue in clues.filter((item) => item.direction === clueDirection)"
+        :key="`${clue.direction}-${clue.number}`"
+        class="clue"
+        :class="{
           'clue--active':
             activeClue?.number === clue.number &&
             activeClue?.direction === clue.direction,
         }"
-          @click="emit('select', clue)"
+        @click="emit('select', clue)"
       >
         <span class="clue__number">
           {{ clue.number }}

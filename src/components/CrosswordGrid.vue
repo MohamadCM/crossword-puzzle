@@ -1,107 +1,119 @@
 <script setup lang="ts">
 import { computed, nextTick, ref, watch } from 'vue';
-import type { CellPosition, CrosswordCell } from '@/types/crossword';
-import type { Direction } from '@/types/crossword';
+
+import type {
+  CrosswordCell,
+  CellPosition,
+  Direction,
+} from '../types/crossword';
 
 const props = defineProps<{
   grid: CrosswordCell[][];
   selectedCell: CellPosition | null;
   direction: Direction;
   activeCells: CellPosition[];
-  entries: Record<string, string>;
-  getLetter: (position: CellPosition) => string;
+  getLetter: (row: number, col: number) => string;
 }>();
 
 const emit = defineEmits<{
-  select: [position: CellPosition];
-  keydown: [event: KeyboardEvent];
+  selectCell: [row: number, col: number];
 }>();
 
-const gridRef = ref<HTMLElement>();
+const cellRefs = ref<Record<string, HTMLButtonElement>>({});
 
-const columnCount = computed(() => props.grid[0]?.length ?? 0);
+const rowCount = computed(() => props.grid.length);
 
-const activeCellKeys = computed(() => {
-  return new Set(props.activeCells.map((cell) => `${cell.row}-${cell.col}`));
+const columnCount = computed(() => {
+  return Math.max(0, ...props.grid.map((row) => row.length));
 });
 
-function cellKey(cell: CrosswordCell) {
-  return `${cell.row}-${cell.col}`;
+function cellKey(row: number, col: number) {
+  return `${row}-${col}`;
 }
 
-function isSelected(cell: CrosswordCell) {
-  return (
-    props.selectedCell?.row === cell.row && props.selectedCell?.col === cell.col
-  );
+function setCellRef(
+  row: number,
+  col: number,
+  element: HTMLButtonElement | null
+) {
+  const key = cellKey(row, col);
+
+  if (element) {
+    cellRefs.value[key] = element;
+  } else {
+    delete cellRefs.value[key];
+  }
 }
 
-function isInActiveClue(cell: CrosswordCell) {
-  return activeCellKeys.value.has(cellKey(cell));
+function isActive(row: number, col: number) {
+  return props.activeCells.some((cell) => cell.row === row && cell.col === col);
 }
 
-function focusSelectedCell() {
-  if (!props.selectedCell) return;
+function isSelected(row: number, col: number) {
+  return props.selectedCell?.row === row && props.selectedCell?.col === col;
+}
 
-  const selector =
-    `[data-row="${props.selectedCell.row}"]` +
-    `[data-col="${props.selectedCell.col}"]`;
-
-  gridRef.value?.querySelector<HTMLButtonElement>(selector)?.focus();
+function handleCellClick(row: number, col: number) {
+  emit('selectCell', row, col);
 }
 
 watch(
   () => props.selectedCell,
-  async () => {
+  async (cell) => {
+    if (!cell) {
+      return;
+    }
+
     await nextTick();
-    focusSelectedCell();
-  }
+
+    cellRefs.value[cellKey(cell.row, cell.col)]?.focus();
+  },
+  { deep: true }
 );
 </script>
 
 <template>
   <div
-    ref="gridRef"
     class="crossword-grid"
     :style="{
-      '--grid-columns': columnCount,
+      '--column-count': columnCount,
     }"
     role="grid"
-    aria-label="Crossword puzzle"
-    @keydown="emit('keydown', $event)"
+    :aria-rowcount="rowCount"
+    :aria-colcount="columnCount"
   >
-    <template v-for="row in grid" :key="row[0]?.row">
+    <template v-for="(row, rowIndex) in grid" :key="rowIndex">
       <button
         v-for="cell in row"
-        :key="cellKey(cell)"
+        :key="cellKey(cell.row, cell.col)"
+        :ref="
+          (element) =>
+            setCellRef(cell.row, cell.col, element as HTMLButtonElement | null)
+        "
+        type="button"
         class="crossword-cell"
         :class="{
+          'crossword-cell--active':
+            !cell.isBlock && isActive(cell.row, cell.col),
+          'crossword-cell--selected':
+            !cell.isBlock && isSelected(cell.row, cell.col),
           'crossword-cell--block': cell.isBlock,
-          'crossword-cell--active': isInActiveClue(cell),
-          'crossword-cell--selected': isSelected(cell),
         }"
-        :data-row="cell.row"
-        :data-col="cell.col"
         :disabled="cell.isBlock"
-        role="gridcell"
-        tabindex="-1"
         :aria-label="
           cell.isBlock
-            ? undefined
+            ? 'Blocked cell'
             : `Row ${cell.row + 1}, column ${cell.col + 1}`
         "
-        @click="
-          emit('select', {
-            row: cell.row,
-            col: cell.col,
-          })
-        "
+        role="gridcell"
+        @click="handleCellClick(cell.row, cell.col)"
       >
         <span v-if="cell.number" class="crossword-cell__number">
           {{ cell.number }}
         </span>
 
         <span class="crossword-cell__letter">
-          {{ getLetter(cell) }}
+          {{ getLetter(cell.row, cell.col) }}
         </span>
       </button>
     </template>
@@ -111,7 +123,7 @@ watch(
 <style scoped>
 .crossword-grid {
   display: grid;
-  grid-template-columns: repeat(v-bind(columnCount), minmax(0, 1fr));
+  grid-template-columns: repeat(var(--column-count), minmax(0, 1fr));
 
   width: min(90vw, 600px);
   aspect-ratio: 1;
