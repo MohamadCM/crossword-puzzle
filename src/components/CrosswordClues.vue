@@ -74,7 +74,7 @@ const emit = defineEmits<{
   border-radius: var(--p-border-radius-sm);
 
   background: transparent;
-  color: var(--p-text-color);
+  color: var(--p-surface-500);
 
   text-align: left;
   cursor: pointer;

@@ -26,7 +26,6 @@ export function useCrossword() {
   }
 
   function loadPuzzle(puzzle: CrosswordJson) {
-    // Create the grid
     grid.value = puzzle.grid.map((row, rowIndex) =>
       row.split('').map((value, colIndex) => ({
         row: rowIndex,
@@ -36,7 +35,6 @@ export function useCrossword() {
       }))
     );
 
-    // Convert JSON entries into CrosswordClue objects
     clues.value = [
       ...puzzle.entries.across.map((entry) => ({
         number: entry.number,
@@ -63,10 +61,7 @@ export function useCrossword() {
       })),
     ];
 
-    // Add clue numbers to the grid cells.
-    //
-    // A cell can start both an Across and a Down clue,
-    // but it should only display the number once.
+    // Add clue numbers to the grid.
     for (const clue of clues.value) {
       const cell = grid.value[clue.start.row]?.[clue.start.col];
 
@@ -75,12 +70,11 @@ export function useCrossword() {
       }
     }
 
-    // Clear previous user answers
+    // Clear previous answers.
     Object.keys(entries).forEach((key) => {
       delete entries[key];
     });
 
-    // Select the first playable cell
     selectedCell.value = findFirstPlayableCell();
     direction.value = 'across';
   }
@@ -168,17 +162,12 @@ export function useCrossword() {
       return;
     }
 
-    const position = {
-      row,
-      col,
-    };
+    const position = { row, col };
 
     const acrossClue = getClueForCell(position, 'across');
 
     const downClue = getClueForCell(position, 'down');
 
-    // Clicking the currently selected cell toggles
-    // between Across and Down when both exist.
     if (
       selectedCell.value &&
       selectedCell.value.row === row &&
@@ -190,7 +179,7 @@ export function useCrossword() {
         direction.value = 'across';
       }
     } else if (getClueForCell(position, direction.value)) {
-      // Keep the current direction.
+      // Keep current direction.
     } else if (acrossClue) {
       direction.value = 'across';
     } else if (downClue) {
@@ -267,7 +256,6 @@ export function useCrossword() {
       return;
     }
 
-    // Replace whatever letter is currently in the cell.
     entries[cellKey(row, col)] = letter.toUpperCase();
 
     selectNextCell();
@@ -281,14 +269,11 @@ export function useCrossword() {
     const { row, col } = selectedCell.value;
     const key = cellKey(row, col);
 
-    // If the current cell contains a letter,
-    // remove it without moving.
     if (entries[key]) {
       delete entries[key];
       return;
     }
 
-    // Otherwise move backwards and clear that cell.
     selectPreviousCell();
 
     if (!selectedCell.value) {
@@ -314,8 +299,30 @@ export function useCrossword() {
     direction.value = direction.value === 'across' ? 'down' : 'across';
   }
 
+  // Check if the puzzle is complete
+  const isComplete = computed(() => {
+    if (grid.value.length === 0) {
+      return false;
+    }
+
+    const cells = grid.value.flat();
+
+    const playableCells = cells.filter((cell) => !cell.isBlock);
+
+    if (playableCells.length === 0) {
+      return false;
+    }
+
+    return playableCells.every((cell) => {
+      const letter = getLetter(cell.row, cell.col);
+
+      return (
+        letter !== '' && letter.toUpperCase() === cell.solution?.toUpperCase()
+      );
+    });
+  });
+
   function handleKeydown(event: KeyboardEvent) {
-    // Letter
     if (event.key.length === 1 && /^[a-zA-Z]$/.test(event.key)) {
       event.preventDefault();
       enterLetter(event.key);
@@ -409,6 +416,7 @@ export function useCrossword() {
     direction,
     activeCells,
     activeClue,
+    isComplete,
     getLetter,
     isActiveCell,
     loadPuzzle,

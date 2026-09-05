@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 
+import Dialog from 'primevue/dialog';
 import Select from 'primevue/select';
 
 import CrosswordGrid from './components/CrosswordGrid.vue';
@@ -29,6 +30,8 @@ const puzzles = computed<PuzzleOption[]>(() =>
 
 const selectedPuzzle = ref<PuzzleOption | null>(null);
 
+const showWinDialog = ref(false);
+
 const {
   grid,
   clues,
@@ -36,6 +39,7 @@ const {
   direction,
   activeCells,
   activeClue,
+  isComplete,
   getLetter,
   handleKeydown,
   selectCell,
@@ -47,11 +51,15 @@ function startPuzzle() {
     return;
   }
 
+  showWinDialog.value = false;
+
   loadPuzzle(selectedPuzzle.value.puzzle);
 }
 
 function selectPuzzle(puzzle: PuzzleOption) {
   selectedPuzzle.value = puzzle;
+  showWinDialog.value = false;
+
   loadPuzzle(puzzle.puzzle);
 }
 
@@ -63,6 +71,16 @@ function selectClue(clue: CrosswordClue) {
     col: clue.start.col,
   };
 }
+
+function closeWinDialog() {
+  showWinDialog.value = false;
+}
+
+watch(isComplete, (complete) => {
+  if (complete) {
+    showWinDialog.value = true;
+  }
+});
 
 const hasPuzzle = computed(() => grid.value.length > 0);
 </script>
@@ -127,6 +145,27 @@ const hasPuzzle = computed(() => grid.value.length > 0);
         />
       </div>
     </section>
+
+    <Dialog
+      v-model:visible="showWinDialog"
+      modal
+      header="Puzzle Complete!"
+      :style="{ width: 'min(90vw, 400px)' }"
+    >
+      <div class="win-dialog">
+        <i class="pi pi-check-circle win-dialog__icon"></i>
+
+        <h2>You win! 🎉</h2>
+
+        <p>
+          Congratulations! You completed
+          <strong>{{ selectedPuzzle?.name }}</strong
+          >.
+        </p>
+
+        <button class="start-button" @click="closeWinDialog">Continue</button>
+      </div>
+    </Dialog>
   </main>
 </template>
 
@@ -207,6 +246,29 @@ const hasPuzzle = computed(() => grid.value.length > 0);
 
   width: 100%;
   outline: none;
+}
+
+.win-dialog {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  gap: 1rem;
+
+  text-align: center;
+}
+
+.win-dialog__icon {
+  font-size: 3rem;
+  color: var(--p-primary-color);
+}
+
+.win-dialog h2 {
+  margin: 0;
+}
+
+.win-dialog p {
+  margin: 0;
 }
 
 @media (max-width: 800px) {

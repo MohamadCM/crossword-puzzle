@@ -1,0 +1,137 @@
+{
+  "title": "Simple 5x5 Test",
+  "grid": [
+    "APPLE",
+    "P#A#R",
+    "PLANT",
+    "L#A#T",
+    "EAGLE"
+  ],
+  "blocks": "#",
+  "entries": {
+    "across": [
+      {
+        "number": 1,
+        "row": 1,
+        "column": 1,
+        "answer": "APPLE",
+        "clue": "Fruit",
+        "enumeration": "(5)"
+      },
+      {
+        "number": 3,
+        "row": 2,
+        "column": 1,
+        "answer": "P",
+        "clue": "Letter before Q",
+        "enumeration": "(1)"
+      },
+      {
+        "number": 4,
+        "row": 2,
+        "column": 3,
+        "answer": "A",
+        "clue": "First letter of the alphabet",
+        "enumeration": "(1)"
+      },
+      {
+        "number": 5,
+        "row": 2,
+        "column": 5,
+        "answer": "R",
+        "clue": "Pirate's sound",
+        "enumeration": "(1)"
+      },
+      {
+        "number": 6,
+        "row": 3,
+        "column": 1,
+        "answer": "PLANT",
+        "clue": "Grows in soil",
+        "enumeration": "(5)"
+      },
+      {
+        "number": 7,
+        "row": 4,
+        "column": 1,
+        "answer": "E",
+        "clue": "Musical note",
+        "enumeration": "(1)"
+      },
+      {
+        "number": 8,
+        "row": 4,
+        "column": 3,
+        "answer": "A",
+        "clue": "Indefinite article",
+        "enumeration": "(1)"
+      },
+      {
+        "number": 9,
+        "row": 4,
+        "column": 5,
+        "answer": "T",
+        "clue": "Tea abbreviation",
+        "enumeration": "(1)"
+      },
+      {
+        "number": 10,
+        "row": 5,
+        "column": 1,
+        "answer": "EAGLE",
+        "clue": "Large bird of prey",
+        "enumeration": "(5)"
+      }
+    ],
+    "down": [
+      {
+        "number": 1,
+        "row": 1,
+        "column": 1,
+        "answer": "APPLE",
+        "clue": "Fruit",
+        "enumeration": "(5)"
+      },
+      {
+        "number": 2,
+        "row": 1,
+        "column": 3,
+        "answer": "A",
+        "clue": "First letter",
+        "enumeration": "(1)"
+      },
+      {
+        "number": 3,
+        "row": 1,
+        "column": 5,
+        "answer": "R",
+        "clue": "Pirate's sound",
+        "enumeration": "(1)"
+      },
+      {
+        "number": 4,
+        "row": 3,
+        "column": 1,
+        "answer": "PLE",
+        "clue": "Apple without its first two letters",
+        "enumeration": "(3)"
+      },
+      {
+        "number": 5,
+        "row": 3,
+        "column": 3,
+        "answer": "A",
+        "clue": "First letter of the alphabet",
+        "enumeration": "(1)"
+      },
+      {
+        "number": 6,
+        "row": 3,
+        "column": 5,
+        "answer": "T",
+        "clue": "Tea abbreviation",
+        "enumeration": "(1)"
+      }
+    ]
+  }
+}
