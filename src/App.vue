@@ -127,7 +127,7 @@ const hasPuzzle = computed(() => grid.value.length > 0);
         </div>
       </header>
 
-      <div class="crossword__content" tabindex="0" @keydown="handleKeydown">
+      <div class="crossword__content" @keydown="handleKeydown">
         <CrosswordGrid
           :grid="grid"
           :selected-cell="selectedCell"

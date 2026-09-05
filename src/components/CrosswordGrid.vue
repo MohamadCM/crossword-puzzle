@@ -68,7 +68,7 @@ watch(
 
     cellRefs.value[cellKey(cell.row, cell.col)]?.focus();
   },
-  { deep: true }
+  { deep: true, immediate: true }
 );
 </script>
 
